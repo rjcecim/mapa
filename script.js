@@ -2,6 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const stateSelect = document.getElementById('stateSelect');
+    const citySearch = document.getElementById('citySearch');
     const checkboxContainer = document.getElementById('checkboxContainer');
     const selectAllBtn = document.getElementById('selectAllBtn');
     const generateMapBtn = document.getElementById('generateMapBtn');
@@ -47,6 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Habilita os botões após carregar os dados
             generateMapBtn.disabled = false;
             downloadMapBtn.disabled = false;
+            // Habilita o campo de pesquisa
+            citySearch.disabled = false;
+            citySearch.value = ''; // Limpa o campo de pesquisa
         } catch (error) {
             console.error(error);
             alert('Falha ao carregar dados GeoJSON.');
@@ -122,6 +126,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Ajusta a visualização do mapa para caber todos os recursos
         map.fitBounds(geojsonLayer.getBounds());
+    };
+
+    // Filtra as cidades com base na pesquisa
+    const filterCities = (searchTerm) => {
+        const checkboxes = checkboxContainer.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            const label = cb.nextElementSibling;
+            if (label.textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
+                cb.parentElement.style.display = 'block';
+            } else {
+                cb.parentElement.style.display = 'none';
+                cb.checked = false; // Desmarca se não corresponder
+            }
+        });
+    };
+
+    // Debounce para otimizar a busca
+    const debounce = (func, delay) => {
+        let debounceTimer;
+        return function() {
+            const context = this;
+            const args = arguments;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => func.apply(context, args), delay);
+        };
     };
 
     // Baixa o mapa como arquivo HTML
@@ -213,10 +242,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Eventos
+    // Evento para seleção de todas as cidades
     selectAllBtn.addEventListener('click', selectAllCities);
+
+    // Evento para gerar o mapa
     generateMapBtn.addEventListener('click', generateMap);
+
+    // Evento para baixar o mapa
     downloadMapBtn.addEventListener('click', downloadMap);
+
+    // Evento para pesquisar cidades
+    citySearch.addEventListener('input', debounce((e) => {
+        const searchTerm = e.target.value.trim();
+        filterCities(searchTerm);
+    }, 300));
 
     // Inicializa o mapa
     initializeMap();
