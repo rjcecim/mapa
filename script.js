@@ -1,19 +1,26 @@
 // script.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    const geojsonFilePath = 'geojs-15-mun.json'; // Certifique-se de que o arquivo está na mesma pasta
+    const stateSelect = document.getElementById('stateSelect');
     const checkboxContainer = document.getElementById('checkboxContainer');
     const selectAllBtn = document.getElementById('selectAllBtn');
     const generateMapBtn = document.getElementById('generateMapBtn');
     const downloadMapBtn = document.getElementById('downloadMapBtn');
 
-    let geojsonData = null;
+    // Mapeamento dos estados para seus respectivos arquivos GeoJSON
+    const geojsonFiles = {
+        para: 'geojs-15-mun.json',       // Pará
+        tocantins: 'geojs-17-mun.json'    // Tocantins
+    };
+
+    let currentGeojsonData = null;
     let map = null;
     let geojsonLayer = null;
+    let selectedState = '';
 
     // Inicializa o mapa
     const initializeMap = () => {
-        map = L.map('map').setView([-14.235004, -51.92528], 4); // Centralizado no Brasil
+        map = L.map('map').setView([-10.9472, -48.3378], 5); // Coordenadas centrais aproximadas do Pará e Tocantins
 
         // Adiciona tiles do OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -22,15 +29,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }).addTo(map);
     };
 
-    // Carrega dados GeoJSON
-    const loadGeoJSON = async () => {
+    // Carrega dados GeoJSON com base no estado selecionado
+    const loadGeoJSON = async (state) => {
+        const filePath = geojsonFiles[state];
+        if (!filePath) {
+            alert('Arquivo GeoJSON para o estado selecionado não encontrado.');
+            return;
+        }
+
         try {
-            const response = await fetch(geojsonFilePath);
+            const response = await fetch(filePath);
             if (!response.ok) {
                 throw new Error(`Erro ao carregar GeoJSON: ${response.status}`);
             }
-            geojsonData = await response.json();
+            currentGeojsonData = await response.json();
             createCityCheckboxes();
+            // Habilita os botões após carregar os dados
+            generateMapBtn.disabled = false;
+            downloadMapBtn.disabled = false;
         } catch (error) {
             console.error(error);
             alert('Falha ao carregar dados GeoJSON.');
@@ -39,11 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cria checkboxes para cada cidade
     const createCityCheckboxes = () => {
-        if (!geojsonData || !geojsonData.features) return;
+        // Limpa os checkboxes anteriores
+        checkboxContainer.innerHTML = '';
+
+        if (!currentGeojsonData || !currentGeojsonData.features) return;
 
         const fragment = document.createDocumentFragment();
 
-        geojsonData.features.forEach(feature => {
+        currentGeojsonData.features.forEach(feature => {
             const cityName = feature.properties.name;
 
             const div = document.createElement('div');
@@ -79,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedCities = Array.from(checkboxContainer.querySelectorAll('input[type="checkbox"]:checked'))
                                    .map(cb => cb.value);
 
-        if (!geojsonData) {
+        if (!currentGeojsonData) {
             alert('Dados GeoJSON não carregados.');
             return;
         }
@@ -88,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             map.removeLayer(geojsonLayer);
         }
 
-        geojsonLayer = L.geoJSON(geojsonData, {
+        geojsonLayer = L.geoJSON(currentGeojsonData, {
             style: feature => ({
                 color: 'black',
                 weight: 1,
@@ -110,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedCities = Array.from(checkboxContainer.querySelectorAll('input[type="checkbox"]:checked'))
                                    .map(cb => cb.value);
 
-        if (!geojsonData) {
+        if (!currentGeojsonData) {
             alert('Dados GeoJSON não carregados.');
             return;
         }
@@ -146,10 +165,10 @@ document.addEventListener('DOMContentLoaded', () => {
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <script>
-        const geojsonData = ${JSON.stringify(geojsonData)};
+        const geojsonData = ${JSON.stringify(currentGeojsonData)};
         const selectedCities = ${JSON.stringify(selectedCities)};
 
-        const map = L.map('map').setView([-14.235004, -51.92528], 4);
+        const map = L.map('map').setView([-10.9472, -48.3378], 5);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -179,12 +198,26 @@ document.addEventListener('DOMContentLoaded', () => {
         saveAs(blob, 'selected_cities_map.html');
     };
 
+    // Evento para seleção do estado
+    stateSelect.addEventListener('change', (e) => {
+        const state = e.target.value;
+        if (state) {
+            selectedState = state;
+            // Limpa o mapa existente
+            if (geojsonLayer) {
+                map.removeLayer(geojsonLayer);
+                geojsonLayer = null;
+            }
+            // Carrega o GeoJSON do estado selecionado
+            loadGeoJSON(state);
+        }
+    });
+
     // Eventos
     selectAllBtn.addEventListener('click', selectAllCities);
     generateMapBtn.addEventListener('click', generateMap);
     downloadMapBtn.addEventListener('click', downloadMap);
 
-    // Inicializa o mapa e carrega o GeoJSON
+    // Inicializa o mapa
     initializeMap();
-    loadGeoJSON();
 });
