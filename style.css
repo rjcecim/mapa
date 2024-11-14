@@ -1,0 +1,12 @@
+/* style.css */
+
+/* Define a altura do mapa para preencher o espaço disponível */
+#map {
+    width: 100%;
+    height: 80vh;
+}
+
+/* Estiliza os checkboxes para terem uma aparência mais espaçada */
+#checkboxContainer .form-check {
+    margin-bottom: 0.5rem;
+}
