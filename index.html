@@ -34,10 +34,20 @@
                         </button>
                     </div>
                     <div class="card-body">
-                        <button id="generateMapBtn" class="btn btn-success w-100 mb-3">
+                        <!-- Dropdown para Seleção do Estado -->
+                        <div class="mb-3">
+                            <label for="stateSelect" class="form-label"><i class="bi bi-flag"></i> Selecionar Estado</label>
+                            <select id="stateSelect" class="form-select">
+                                <option value="" disabled selected>Escolha um estado</option>
+                                <option value="para">Pará</option>
+                                <option value="tocantins">Tocantins</option>
+                            </select>
+                        </div>
+
+                        <button id="generateMapBtn" class="btn btn-success w-100 mb-3" disabled>
                             <i class="bi bi-map"></i> Gerar Mapa
                         </button>
-                        <button id="downloadMapBtn" class="btn btn-secondary w-100 mb-3">
+                        <button id="downloadMapBtn" class="btn btn-secondary w-100 mb-3" disabled>
                             <i class="bi bi-download"></i> Baixar Mapa como HTML
                         </button>
                         <hr>
