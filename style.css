@@ -34,3 +34,12 @@ body {
     opacity: 0.9;
     transition: opacity 0.3s;
 }
+
+/* Ajuste para o campo de pesquisa */
+#citySearch {
+    transition: all 0.3s ease;
+}
+
+#citySearch:disabled {
+    background-color: #e9ecef;
+}
