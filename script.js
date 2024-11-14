@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const stateSelect = document.getElementById('stateSelect');
     const citySearch = document.getElementById('citySearch');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
     const checkboxContainer = document.getElementById('checkboxContainer');
     const selectAllBtn = document.getElementById('selectAllBtn');
     const generateMapBtn = document.getElementById('generateMapBtn');
@@ -48,9 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Habilita os botões após carregar os dados
             generateMapBtn.disabled = false;
             downloadMapBtn.disabled = false;
-            // Habilita o campo de pesquisa
+            // Habilita o campo de pesquisa e o botão de limpar pesquisa
             citySearch.disabled = false;
+            clearSearchBtn.disabled = false;
             citySearch.value = ''; // Limpa o campo de pesquisa
+            filterCities(''); // Exibe todas as cidades
         } catch (error) {
             console.error(error);
             alert('Falha ao carregar dados GeoJSON.');
@@ -131,15 +134,43 @@ document.addEventListener('DOMContentLoaded', () => {
     // Filtra as cidades com base na pesquisa
     const filterCities = (searchTerm) => {
         const checkboxes = checkboxContainer.querySelectorAll('input[type="checkbox"]');
+        let anyVisible = false; // Flag para verificar se alguma cidade está visível
+
         checkboxes.forEach(cb => {
             const label = cb.nextElementSibling;
             if (label.textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
                 cb.parentElement.style.display = 'block';
+                anyVisible = true;
             } else {
                 cb.parentElement.style.display = 'none';
-                cb.checked = false; // Desmarca se não corresponder
+                // REMOVIDO: Não desmarcar a checkbox quando está sendo filtrada
+                // cb.checked = false; // Desmarca se não corresponder
             }
         });
+
+        // Opcional: Exibir uma mensagem se nenhuma cidade corresponder
+        if (searchTerm !== '') {
+            if (!anyVisible) {
+                if (!document.getElementById('noResults')) {
+                    const noResultsDiv = document.createElement('div');
+                    noResultsDiv.id = 'noResults';
+                    noResultsDiv.className = 'text-center text-muted mt-2';
+                    noResultsDiv.textContent = 'Nenhuma cidade encontrada.';
+                    checkboxContainer.appendChild(noResultsDiv);
+                }
+            } else {
+                const noResultsDiv = document.getElementById('noResults');
+                if (noResultsDiv) {
+                    checkboxContainer.removeChild(noResultsDiv);
+                }
+            }
+        } else {
+            // Remover a mensagem se o termo de busca estiver vazio
+            const noResultsDiv = document.getElementById('noResults');
+            if (noResultsDiv) {
+                checkboxContainer.removeChild(noResultsDiv);
+            }
+        }
     };
 
     // Debounce para otimizar a busca
@@ -256,6 +287,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchTerm = e.target.value.trim();
         filterCities(searchTerm);
     }, 300));
+
+    // Evento para limpar a pesquisa
+    clearSearchBtn.addEventListener('click', () => {
+        citySearch.value = '';
+        filterCities('');
+    });
 
     // Inicializa o mapa
     initializeMap();
