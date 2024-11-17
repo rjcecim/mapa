@@ -1,41 +1,32 @@
-/* style.css */
-
-/* Aplicação da Fonte Roboto */
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f8f9fa; /* Cor de fundo suave */
+    background-color: #f8f9fa;
 }
 
-/* Define a altura do mapa para preencher o espaço disponível */
 #map {
     width: 100%;
     height: 80vh;
 }
 
-/* Estiliza os checkboxes para terem uma aparência mais espaçada */
 #checkboxContainer .form-check {
     margin-bottom: 0.5rem;
 }
 
-/* Estiliza os títulos das cartas */
 .card-header span {
     font-weight: 500;
     font-size: 1.1rem;
 }
 
-/* Ajusta os tooltips para terem uma aparência mais consistente */
 .leaflet-tooltip {
     font-family: 'Roboto', sans-serif;
     font-size: 0.9rem;
 }
 
-/* Botões Hover Effects */
 .btn-primary:hover, .btn-success:hover, .btn-secondary:hover {
     opacity: 0.9;
     transition: opacity 0.3s;
 }
 
-/* Ajuste para o campo de pesquisa */
 #citySearch {
     transition: all 0.3s ease;
 }
