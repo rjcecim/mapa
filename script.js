@@ -8,20 +8,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadMapBtn = document.getElementById('downloadMapBtn');
 
     const geojsonFiles = {
-        para: 'geojs-15-mun.json',
-        tocantins: 'geojs-17-mun.json'
+        acre: 'geojson/acre.json',
+        alagoas: 'geojson/alagoas.json',
+        amapa: 'geojson/amapa.json',
+        amazonas: 'geojson/amazonas.json',
+        bahia: 'geojson/bahia.json',
+        ceara: 'geojson/ceara.json',
+        distritofederal: 'geojson/distritofederal.json',
+        espiritosanto: 'geojson/espiritosanto.json',
+        goias: 'geojson/goias.json',
+        maranhao: 'geojson/maranhao.json',
+        matogrosso: 'geojson/matogrosso.json',
+        matogrossodosul: 'geojson/matogrossodosul.json',
+        minasgerais: 'geojson/minasgerais.json',
+        para: 'geojson/para.json',
+        paraiba: 'geojson/paraiba.json',
+        parana: 'geojson/parana.json',
+        pernambuco: 'geojson/pernambuco.json',
+        piaui: 'geojson/piaui.json',
+        riodejaneiro: 'geojson/riodejaneiro.json',
+        riograndedonorte: 'geojson/riograndedonorte.json',
+        riograndedosul: 'geojson/riograndedosul.json',
+        rondonia: 'geojson/rondonia.json',
+        roraima: 'geojson/roraima.json',
+        santacatarina: 'geojson/santacatarina.json',
+        saopaulo: 'geojson/saopaulo.json',
+        sergipe: 'geojson/sergipe.json',
+        tocantins: 'geojson/tocantins.json'
     };
 
     let map = null;
     let geojsonDataPerState = {};
 
-    const selectedCitiesPerState = {
-        para: new Set(),
-        tocantins: new Set()
-    };
+    const selectedCitiesPerState = {};
+    Object.keys(geojsonFiles).forEach(state => {
+        selectedCitiesPerState[state] = new Set();
+    });
 
     const initializeMap = () => {
-        map = L.map('map').setView([-10.9472, -48.3378], 5);
+        map = L.map('map').setView([-15.793889, -47.882778], 5);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
@@ -121,6 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             fillColor = '#ff0000';
                         } else if (state === 'tocantins') {
                             fillColor = '#ffff00';
+                        } else {
+                            fillColor = '#00ff00';
                         }
                     }
                     return {
@@ -242,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const embeddedGeoJSON = ${JSON.stringify(embeddedGeoJSON)};
         const selectedCitiesPerState = ${JSON.stringify(allSelectedCities)};
 
-        const map = L.map('map').setView([-10.9472, -48.3378], 5);
+        const map = L.map('map').setView([-15.793889, -47.882778], 5);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -259,6 +286,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             fillColor = '#ff0000';
                         } else if (state === 'tocantins') {
                             fillColor = '#ffff00';
+                        } else {
+                            fillColor = '#00ff00';
                         }
                     }
                     return {
